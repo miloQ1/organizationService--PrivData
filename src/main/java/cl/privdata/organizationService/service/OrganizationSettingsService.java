@@ -10,7 +10,6 @@ import cl.privdata.organizationService.repository.OrganizationSettingsRepository
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -26,7 +25,7 @@ public class OrganizationSettingsService {
     }
 
     @Transactional(readOnly = true)
-    public OrganizationSettingsResponse findByOrganization(UUID organizationId) {
+    public OrganizationSettingsResponse findByOrganization(Long organizationId) {
         return repository.findByOrganizationId(organizationId)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
@@ -42,10 +41,10 @@ public class OrganizationSettingsService {
 
         entity.setOrganization(organization);
         mapToEntity(request, entity);
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(UUID organizationId) {
+    public void delete(Long organizationId) {
         OrganizationSettings entity = repository.findByOrganizationId(organizationId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
         repository.delete(entity);
@@ -57,7 +56,7 @@ public class OrganizationSettingsService {
         if (request.defaultLanguage() != null) entity.setDefaultLanguage(request.defaultLanguage());
         entity.setRetentionPolicyDays(request.retentionPolicyDays());
         entity.setPrivacyEmail(request.privacyEmail());
-        if (request.allowDataExports() != null) entity.setAllowDataExports(request.allowDataExports());
+        entity.setAllowDataExports(request.allowDataExports());
         entity.setConsentExpiryAlertDays(request.consentExpiryAlertDays());
     }
 

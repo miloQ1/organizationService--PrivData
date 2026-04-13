@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -39,14 +38,14 @@ public class DepartmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<DepartmentResponse> findAllByOrganization(UUID organizationId) {
+    public List<DepartmentResponse> findAllByOrganization(Long organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public DepartmentResponse findById(UUID id) {
+    public DepartmentResponse findById(Long id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
@@ -69,10 +68,10 @@ public class DepartmentService {
         Department entity = new Department();
         entity.setOrganization(organization);
         mapToEntity(request, entity);
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public DepartmentResponse update(UUID id, DepartmentRequest request) {
+    public DepartmentResponse update(Long id, DepartmentRequest request) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -87,10 +86,10 @@ public class DepartmentService {
 
         entity.setOrganization(organization);
         mapToEntity(request, entity);
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
 
@@ -104,6 +103,14 @@ public class DepartmentService {
         }
 
         repository.delete(entity);
+    }
+
+    // Borrado lógico: desactiva el departamento sin eliminarlo
+    public DepartmentResponse deactivate(Long id) {
+        Department entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Department", id));
+        entity.setIsActive(false);
+        return toResponse(repository.saveAndFlush(entity));
     }
 
     // --- Mapping helpers ---

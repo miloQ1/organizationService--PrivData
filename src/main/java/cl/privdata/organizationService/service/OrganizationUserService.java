@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -40,14 +39,14 @@ public class OrganizationUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrganizationUserResponse> findAllByOrganization(UUID organizationId) {
+    public List<OrganizationUserResponse> findAllByOrganization(Long organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public OrganizationUserResponse findById(UUID id) {
+    public OrganizationUserResponse findById(Long id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
@@ -84,10 +83,10 @@ public class OrganizationUserService {
 
         entity.setPosition(request.position());
         entity.setIsActive(request.isActive());
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public OrganizationUserResponse update(UUID id, OrganizationUserRequest request) {
+    public OrganizationUserResponse update(Long id, OrganizationUserRequest request) {
         OrganizationUser entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -118,20 +117,28 @@ public class OrganizationUserService {
 
         entity.setPosition(request.position());
         entity.setIsActive(request.isActive());
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("OrganizationUser", id);
         }
         repository.deleteById(id);
     }
 
+    // Activa o suspende el acceso de un usuario en la organización
+    public OrganizationUserResponse updateStatus(Long id, Boolean isActive) {
+        OrganizationUser entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
+        entity.setIsActive(isActive);
+        return toResponse(repository.saveAndFlush(entity));
+    }
+
     // --- Mapping helpers ---
 
     private OrganizationUserResponse toResponse(OrganizationUser entity) {
-        UUID departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
+        Long departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
         return new OrganizationUserResponse(
                 entity.getId(),
                 entity.getOrganization().getId(),

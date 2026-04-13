@@ -5,12 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface OrganizationSettingsRepository extends JpaRepository<OrganizationSettings, UUID> {
+public interface OrganizationSettingsRepository extends JpaRepository<OrganizationSettings, Long> {
 
-    Optional<OrganizationSettings> findByOrganizationId(UUID organizationId);
+    Optional<OrganizationSettings> findByOrganizationId(Long organizationId);
 
-    boolean existsByOrganizationId(UUID organizationId);
+    boolean existsByOrganizationId(Long organizationId);
 }

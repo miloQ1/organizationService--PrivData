@@ -3,21 +3,20 @@ package cl.privdata.organizationService.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
 public record OrganizationSettingsRequest(
 
-        @NotNull(message = "Organization ID is required")
-        UUID organizationId,
+        @NotNull(message = "El ID de la organización es obligatorio")
+        Long organizationId,
 
         String defaultLanguage,
 
+        @NotNull(message = "Los días de retención son obligatorios")
         Integer retentionPolicyDays,
 
-        @Email(message = "Invalid privacy email format")
+        @Email(message = "Correo de privacidad inválido")
         String privacyEmail,
 
-        Boolean allowDataExports,
+        boolean allowDataExports,
 
         Integer consentExpiryAlertDays
 ) {}

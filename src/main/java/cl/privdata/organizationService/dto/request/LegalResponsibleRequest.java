@@ -4,24 +4,21 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
 public record LegalResponsibleRequest(
 
-        @NotNull(message = "Organization ID is required")
-        UUID organizationId,
+        @NotNull(message = "El ID de la organización es obligatorio")
+        Long organizationId,
 
-        @NotBlank(message = "Full name is required")
+        @NotBlank(message = "El nombre completo es obligatorio")
         String fullName,
 
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email format")
+        @Email(message = "Formato de correo inválido")
         String email,
 
         String phone,
 
+        @NotBlank(message = "El tipo de rol legal es obligatorio")
         String roleType,
 
-        @NotNull(message = "isActive is required")
-        Boolean isActive
+        boolean isActive
 ) {}

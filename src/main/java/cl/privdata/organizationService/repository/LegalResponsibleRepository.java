@@ -5,14 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface LegalResponsibleRepository extends JpaRepository<LegalResponsible, UUID> {
+public interface LegalResponsibleRepository extends JpaRepository<LegalResponsible, Long> {
 
-    List<LegalResponsible> findAllByOrganizationId(UUID organizationId);
+    List<LegalResponsible> findAllByOrganizationId(Long organizationId);
 
-    List<LegalResponsible> findAllByOrganizationIdAndIsActive(UUID organizationId, Boolean isActive);
+    List<LegalResponsible> findAllByOrganizationIdAndIsActive(Long organizationId, Boolean isActive);
 
-    boolean existsByOrganizationIdAndEmail(UUID organizationId, String email);
+    boolean existsByOrganizationIdAndEmail(Long organizationId, String email);
 }

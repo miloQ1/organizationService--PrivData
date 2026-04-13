@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -35,14 +34,14 @@ public class LegalResponsibleService {
     }
 
     @Transactional(readOnly = true)
-    public List<LegalResponsibleResponse> findAllByOrganization(UUID organizationId) {
+    public List<LegalResponsibleResponse> findAllByOrganization(Long organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public LegalResponsibleResponse findById(UUID id) {
+    public LegalResponsibleResponse findById(Long id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("LegalResponsible", id));
@@ -65,10 +64,10 @@ public class LegalResponsibleService {
         LegalResponsible entity = new LegalResponsible();
         entity.setOrganization(organization);
         mapToEntity(request, entity);
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public LegalResponsibleResponse update(UUID id, LegalResponsibleRequest request) {
+    public LegalResponsibleResponse update(Long id, LegalResponsibleRequest request) {
         LegalResponsible entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("LegalResponsible", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -83,10 +82,10 @@ public class LegalResponsibleService {
 
         entity.setOrganization(organization);
         mapToEntity(request, entity);
-        return toResponse(repository.save(entity));
+        return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("LegalResponsible", id);
         }

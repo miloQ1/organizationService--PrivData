@@ -3,30 +3,24 @@ package cl.privdata.organizationService.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
 public record NotificationTemplateRequest(
 
-        @NotNull(message = "Organization ID is required")
-        UUID organizationId,
+        @NotNull(message = "El ID de la organización es obligatorio")
+        Long organizationId,
 
-        @NotBlank(message = "Code is required")
+        @NotBlank(message = "El código único es obligatorio")
         String code,
 
-        @NotBlank(message = "Name is required")
+        @NotBlank(message = "El nombre es obligatorio")
         String name,
 
-        @NotBlank(message = "Template type is required")
         String templateType,
 
+        @NotBlank(message = "El asunto de la plantilla es obligatorio")
         String subjectTemplate,
 
-        @NotBlank(message = "Body template is required")
+        @NotBlank(message = "El cuerpo de la plantilla es obligatorio")
         String bodyTemplate,
 
-        @NotNull(message = "isActive is required")
-        Boolean isActive,
-
-        @NotNull(message = "Version is required")
-        Integer version
+        boolean isActive
 ) {}

@@ -2,27 +2,26 @@ package cl.privdata.organizationService.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record OrganizationRequest(
 
-        @NotBlank(message = "Name is required")
+        @NotBlank(message = "El nombre es obligatorio")
         String name,
 
+        @NotBlank(message = "La razón social es obligatoria")
         String legalName,
 
-        @NotBlank(message = "RUT is required")
+        @NotBlank(message = "El RUT es obligatorio")
         String rut,
 
         String businessType,
 
-        @Email(message = "Invalid email format")
+        @Email(message = "Formato de correo inválido")
         String email,
 
         String phone,
 
         String address,
 
-        @NotNull(message = "isActive is required")
-        Boolean isActive
+        boolean isActive
 ) {}
