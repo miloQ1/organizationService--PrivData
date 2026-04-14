@@ -2,10 +2,10 @@ package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.LegalResponsibleRequest;
 import cl.privdata.organizationService.dto.response.LegalResponsibleResponse;
-import cl.privdata.organizationService.entity.LegalResponsible;
-import cl.privdata.organizationService.entity.Organization;
 import cl.privdata.organizationService.exception.BusinessRuleException;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
+import cl.privdata.organizationService.model.LegalResponsible;
+import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.LegalResponsibleRepository;
 import cl.privdata.organizationService.repository.OrganizationRepository;
 import org.springframework.stereotype.Service;

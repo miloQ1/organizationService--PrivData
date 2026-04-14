@@ -1,8 +1,9 @@
 package cl.privdata.organizationService.repository;
 
-import cl.privdata.organizationService.entity.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import cl.privdata.organizationService.model.Department;
 
 import java.util.List;
 

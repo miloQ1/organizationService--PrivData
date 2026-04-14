@@ -1,4 +1,4 @@
-package cl.privdata.organizationService.entity;
+package cl.privdata.organizationService.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -6,8 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "legal_responsibles")
-public class LegalResponsible {
+@Table(name = "departments")
+public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,17 +18,11 @@ public class LegalResponsible {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @Column(name = "full_name", nullable = false, length = 255)
-    private String fullName;
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
 
-    @Column(name = "email", nullable = false, length = 255)
-    private String email;
-
-    @Column(name = "phone", length = 50)
-    private String phone;
-
-    @Column(name = "role_type", length = 100)
-    private String roleType;
+    @Column(name = "description", length = 1000)
+    private String description;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -38,7 +32,7 @@ public class LegalResponsible {
     private LocalDateTime createdAt;
 
     // Constructors
-    public LegalResponsible() {}
+    public Department() {}
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -47,17 +41,11 @@ public class LegalResponsible {
     public Organization getOrganization() { return organization; }
     public void setOrganization(Organization organization) { this.organization = organization; }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-
-    public String getRoleType() { return roleType; }
-    public void setRoleType(String roleType) { this.roleType = roleType; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }

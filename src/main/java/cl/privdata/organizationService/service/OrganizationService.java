@@ -2,9 +2,9 @@ package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.OrganizationRequest;
 import cl.privdata.organizationService.dto.response.OrganizationResponse;
-import cl.privdata.organizationService.entity.Organization;
 import cl.privdata.organizationService.exception.BusinessRuleException;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
+import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.OrganizationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

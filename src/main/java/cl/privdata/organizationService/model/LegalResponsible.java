@@ -1,4 +1,4 @@
-package cl.privdata.organizationService.entity;
+package cl.privdata.organizationService.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -6,8 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "departments")
-public class Department {
+@Table(name = "legal_responsibles")
+public class LegalResponsible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +18,17 @@ public class Department {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    @Column(name = "name", nullable = false, length = 255)
-    private String name;
+    @Column(name = "full_name", nullable = false, length = 255)
+    private String fullName;
 
-    @Column(name = "description", length = 1000)
-    private String description;
+    @Column(name = "email", nullable = false, length = 255)
+    private String email;
+
+    @Column(name = "phone", length = 50)
+    private String phone;
+
+    @Column(name = "role_type", length = 100)
+    private String roleType;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -32,7 +38,7 @@ public class Department {
     private LocalDateTime createdAt;
 
     // Constructors
-    public Department() {}
+    public LegalResponsible() {}
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -41,11 +47,17 @@ public class Department {
     public Organization getOrganization() { return organization; }
     public void setOrganization(Organization organization) { this.organization = organization; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getRoleType() { return roleType; }
+    public void setRoleType(String roleType) { this.roleType = roleType; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }

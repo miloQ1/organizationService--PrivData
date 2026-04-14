@@ -1,4 +1,4 @@
-package cl.privdata.organizationService.entity;
+package cl.privdata.organizationService.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;

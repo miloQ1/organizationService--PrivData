@@ -2,9 +2,9 @@ package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.OrganizationSettingsRequest;
 import cl.privdata.organizationService.dto.response.OrganizationSettingsResponse;
-import cl.privdata.organizationService.entity.Organization;
-import cl.privdata.organizationService.entity.OrganizationSettings;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
+import cl.privdata.organizationService.model.Organization;
+import cl.privdata.organizationService.model.OrganizationSettings;
 import cl.privdata.organizationService.repository.OrganizationRepository;
 import cl.privdata.organizationService.repository.OrganizationSettingsRepository;
 import org.springframework.stereotype.Service;
