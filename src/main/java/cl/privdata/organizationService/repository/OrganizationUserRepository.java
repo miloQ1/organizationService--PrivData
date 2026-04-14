@@ -7,17 +7,18 @@ import cl.privdata.organizationService.model.OrganizationUser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface OrganizationUserRepository extends JpaRepository<OrganizationUser, Long> {
+public interface OrganizationUserRepository extends JpaRepository<OrganizationUser, UUID> {
 
-    List<OrganizationUser> findAllByOrganizationId(Long organizationId);
+    List<OrganizationUser> findAllByOrganizationId(UUID organizationId);
 
-    List<OrganizationUser> findAllByOrganizationIdAndIsActive(Long organizationId, Boolean isActive);
+    List<OrganizationUser> findAllByOrganizationIdAndIsActive(UUID organizationId, Boolean isActive);
 
-    Optional<OrganizationUser> findByOrganizationIdAndUserId(Long organizationId, Long userId);
+    Optional<OrganizationUser> findByOrganizationIdAndUserId(UUID organizationId, Long userId);
 
-    List<OrganizationUser> findAllByDepartmentId(Long departmentId);
+    List<OrganizationUser> findAllByDepartmentId(UUID departmentId);
 
-    boolean existsByOrganizationIdAndUserId(Long organizationId, Long userId);
+    boolean existsByOrganizationIdAndUserId(UUID organizationId, Long userId);
 }

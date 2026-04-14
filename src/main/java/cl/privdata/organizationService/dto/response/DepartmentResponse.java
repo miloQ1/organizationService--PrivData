@@ -1,10 +1,11 @@
 package cl.privdata.organizationService.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record DepartmentResponse(
-        Long id,
-        Long organizationId,
+        UUID id,
+        UUID organizationId,
         String name,
         String description,
         boolean isActive,

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -27,7 +28,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/organization/{organizationId}")
-    public ResponseEntity<List<DepartmentResponse>> findAllByOrganization(@PathVariable Long organizationId) {
+    public ResponseEntity<List<DepartmentResponse>> findAllByOrganization(@PathVariable UUID organizationId) {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
@@ -39,14 +40,14 @@ public class DepartmentController {
 
     // Edita la descripción o nombre de un área
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> update(@PathVariable Long id,
+    public ResponseEntity<DepartmentResponse> update(@PathVariable UUID id,
                                                       @Valid @RequestBody DepartmentRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
     // Desactiva un departamento (borrado lógico)
     @DeleteMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> deactivate(@PathVariable Long id) {
+    public ResponseEntity<DepartmentResponse> deactivate(@PathVariable UUID id) {
         return ResponseEntity.ok(service.deactivate(id));
     }
 }

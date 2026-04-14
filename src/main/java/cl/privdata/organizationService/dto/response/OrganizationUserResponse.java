@@ -1,12 +1,13 @@
 package cl.privdata.organizationService.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record OrganizationUserResponse(
-        Long id,
-        Long organizationId,
+        UUID id,
+        UUID organizationId,
         Long userId,
-        Long departmentId,
+        UUID departmentId,
         String position,
         boolean isActive,
         LocalDateTime joinedAt

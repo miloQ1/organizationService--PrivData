@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -38,14 +39,14 @@ public class DepartmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<DepartmentResponse> findAllByOrganization(Long organizationId) {
+    public List<DepartmentResponse> findAllByOrganization(UUID organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public DepartmentResponse findById(Long id) {
+    public DepartmentResponse findById(UUID id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
@@ -71,7 +72,7 @@ public class DepartmentService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public DepartmentResponse update(Long id, DepartmentRequest request) {
+    public DepartmentResponse update(UUID id, DepartmentRequest request) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -89,7 +90,7 @@ public class DepartmentService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
 
@@ -106,7 +107,7 @@ public class DepartmentService {
     }
 
     // Borrado lógico: desactiva el departamento sin eliminarlo
-    public DepartmentResponse deactivate(Long id) {
+    public DepartmentResponse deactivate(UUID id) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
         entity.setIsActive(false);

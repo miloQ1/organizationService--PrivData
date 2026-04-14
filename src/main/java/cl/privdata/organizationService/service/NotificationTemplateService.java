@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -38,14 +39,14 @@ public class NotificationTemplateService {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationTemplateResponse> findAllByOrganization(Long organizationId) {
+    public List<NotificationTemplateResponse> findAllByOrganization(UUID organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public NotificationTemplateResponse findById(Long id) {
+    public NotificationTemplateResponse findById(UUID id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("NotificationTemplate", id));
@@ -68,7 +69,7 @@ public class NotificationTemplateService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public NotificationTemplateResponse update(Long id, NotificationTemplateRequest request) {
+    public NotificationTemplateResponse update(UUID id, NotificationTemplateRequest request) {
         NotificationTemplate entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("NotificationTemplate", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -92,7 +93,7 @@ public class NotificationTemplateService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("NotificationTemplate", id);
         }
@@ -101,14 +102,14 @@ public class NotificationTemplateService {
 
     // Obtiene la versión activa más reciente de una plantilla por su código
     @Transactional(readOnly = true)
-    public NotificationTemplateResponse findActiveByCode(Long organizationId, String code) {
+    public NotificationTemplateResponse findActiveByCode(UUID organizationId, String code) {
         return repository.findFirstByOrganizationIdAndCodeAndIsActiveTrueOrderByVersionDesc(organizationId, code)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("NotificationTemplate with code '" + code + "'", organizationId));
     }
 
     // Permite al administrador editar subject y body de la plantilla activa
-    public NotificationTemplateResponse updateByCode(Long organizationId, String code, TemplateUpdateRequest request) {
+    public NotificationTemplateResponse updateByCode(UUID organizationId, String code, TemplateUpdateRequest request) {
         NotificationTemplate entity = repository
                 .findFirstByOrganizationIdAndCodeAndIsActiveTrueOrderByVersionDesc(organizationId, code)
                 .orElseThrow(() -> new ResourceNotFoundException("NotificationTemplate with code '" + code + "'", organizationId));
@@ -119,7 +120,7 @@ public class NotificationTemplateService {
 
     // Procesa la plantilla activa sustituyendo variables {{clave}} con los valores recibidos
     @Transactional(readOnly = true)
-    public TemplateRenderResponse render(Long organizationId, String code, TemplateRenderRequest request) {
+    public TemplateRenderResponse render(UUID organizationId, String code, TemplateRenderRequest request) {
         NotificationTemplate template = repository
                 .findFirstByOrganizationIdAndCodeAndIsActiveTrueOrderByVersionDesc(organizationId, code)
                 .orElseThrow(() -> new ResourceNotFoundException("NotificationTemplate with code '" + code + "'", organizationId));

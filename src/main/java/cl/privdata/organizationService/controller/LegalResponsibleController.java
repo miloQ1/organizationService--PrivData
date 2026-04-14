@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/legal-responsibles")
@@ -22,7 +23,7 @@ public class LegalResponsibleController {
 
     // Lista a los encargados actuales
     @GetMapping
-    public ResponseEntity<List<LegalResponsibleResponse>> findAllByOrganization(@RequestParam Long organizationId) {
+    public ResponseEntity<List<LegalResponsibleResponse>> findAllByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
@@ -34,7 +35,7 @@ public class LegalResponsibleController {
 
     // Actualiza los datos de contacto o el tipo de rol legal
     @PutMapping("/{id}")
-    public ResponseEntity<LegalResponsibleResponse> update(@PathVariable Long id,
+    public ResponseEntity<LegalResponsibleResponse> update(@PathVariable UUID id,
                                                             @Valid @RequestBody LegalResponsibleRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }

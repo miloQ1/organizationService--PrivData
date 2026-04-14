@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/organizations")
 public class OrganizationController {
@@ -26,13 +28,13 @@ public class OrganizationController {
 
     // Obtiene los datos legales y de contacto de la empresa (RUT, nombre legal, dirección)
     @GetMapping("/{id}")
-    public ResponseEntity<OrganizationResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<OrganizationResponse> findById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     // Actualiza el perfil de la organización
     @PutMapping("/{id}")
-    public ResponseEntity<OrganizationResponse> update(@PathVariable Long id,
+    public ResponseEntity<OrganizationResponse> update(@PathVariable UUID id,
                                                         @Valid @RequestBody OrganizationRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }

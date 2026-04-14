@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/organization-users")
@@ -23,7 +24,7 @@ public class OrganizationUserController {
 
     // Lista a todo el personal interno y sus posiciones
     @GetMapping
-    public ResponseEntity<List<OrganizationUserResponse>> findAllByOrganization(@RequestParam Long organizationId) {
+    public ResponseEntity<List<OrganizationUserResponse>> findAllByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
@@ -35,7 +36,7 @@ public class OrganizationUserController {
 
     // Activa o suspende el acceso de un usuario dentro de la organización
     @PatchMapping("/{id}/status")
-    public ResponseEntity<OrganizationUserResponse> updateStatus(@PathVariable Long id,
+    public ResponseEntity<OrganizationUserResponse> updateStatus(@PathVariable UUID id,
                                                                   @Valid @RequestBody StatusUpdateRequest request) {
         return ResponseEntity.ok(service.updateStatus(id, request.isActive()));
     }

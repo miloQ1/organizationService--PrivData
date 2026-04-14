@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -34,14 +35,14 @@ public class LegalResponsibleService {
     }
 
     @Transactional(readOnly = true)
-    public List<LegalResponsibleResponse> findAllByOrganization(Long organizationId) {
+    public List<LegalResponsibleResponse> findAllByOrganization(UUID organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public LegalResponsibleResponse findById(Long id) {
+    public LegalResponsibleResponse findById(UUID id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("LegalResponsible", id));
@@ -67,7 +68,7 @@ public class LegalResponsibleService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public LegalResponsibleResponse update(Long id, LegalResponsibleRequest request) {
+    public LegalResponsibleResponse update(UUID id, LegalResponsibleRequest request) {
         LegalResponsible entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("LegalResponsible", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -85,7 +86,7 @@ public class LegalResponsibleService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("LegalResponsible", id);
         }

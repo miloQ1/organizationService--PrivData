@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/organization-settings")
 public class OrganizationSettingsController {
@@ -19,7 +21,7 @@ public class OrganizationSettingsController {
 
     // Consulta políticas globales: retención, alertas de vencimiento, correo de privacidad
     @GetMapping
-    public ResponseEntity<OrganizationSettingsResponse> findByOrganization(@RequestParam Long organizationId) {
+    public ResponseEntity<OrganizationSettingsResponse> findByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findByOrganization(organizationId));
     }
 

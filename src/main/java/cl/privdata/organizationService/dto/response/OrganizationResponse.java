@@ -1,9 +1,10 @@
 package cl.privdata.organizationService.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record OrganizationResponse(
-        Long id,
+        UUID id,
         String name,
         String legalName,
         String rut,

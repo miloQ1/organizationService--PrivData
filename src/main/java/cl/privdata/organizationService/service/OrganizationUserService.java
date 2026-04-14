@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -39,14 +40,14 @@ public class OrganizationUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrganizationUserResponse> findAllByOrganization(Long organizationId) {
+    public List<OrganizationUserResponse> findAllByOrganization(UUID organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public OrganizationUserResponse findById(Long id) {
+    public OrganizationUserResponse findById(UUID id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
@@ -86,7 +87,7 @@ public class OrganizationUserService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public OrganizationUserResponse update(Long id, OrganizationUserRequest request) {
+    public OrganizationUserResponse update(UUID id, OrganizationUserRequest request) {
         OrganizationUser entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
         Organization organization = organizationRepository.findById(request.organizationId())
@@ -120,7 +121,7 @@ public class OrganizationUserService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("OrganizationUser", id);
         }
@@ -128,7 +129,7 @@ public class OrganizationUserService {
     }
 
     // Activa o suspende el acceso de un usuario en la organización
-    public OrganizationUserResponse updateStatus(Long id, Boolean isActive) {
+    public OrganizationUserResponse updateStatus(UUID id, Boolean isActive) {
         OrganizationUser entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationUser", id));
         entity.setIsActive(isActive);
@@ -138,7 +139,7 @@ public class OrganizationUserService {
     // --- Mapping helpers ---
 
     private OrganizationUserResponse toResponse(OrganizationUser entity) {
-        Long departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
+        UUID departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
         return new OrganizationUserResponse(
                 entity.getId(),
                 entity.getOrganization().getId(),

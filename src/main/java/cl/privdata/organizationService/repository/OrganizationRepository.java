@@ -7,9 +7,10 @@ import cl.privdata.organizationService.model.Organization;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+public interface OrganizationRepository extends JpaRepository<Organization, UUID> {
 
     Optional<Organization> findByRut(String rut);
 

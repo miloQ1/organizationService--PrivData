@@ -1,10 +1,11 @@
 package cl.privdata.organizationService.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record NotificationTemplateResponse(
-        Long id,
-        Long organizationId,
+        UUID id,
+        UUID organizationId,
         String code,
         String name,
         String templateType,

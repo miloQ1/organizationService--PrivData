@@ -10,6 +10,8 @@ import cl.privdata.organizationService.repository.OrganizationSettingsRepository
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 
 @Service
 @Transactional
@@ -25,7 +27,7 @@ public class OrganizationSettingsService {
     }
 
     @Transactional(readOnly = true)
-    public OrganizationSettingsResponse findByOrganization(Long organizationId) {
+    public OrganizationSettingsResponse findByOrganization(UUID organizationId) {
         return repository.findByOrganizationId(organizationId)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
@@ -44,7 +46,7 @@ public class OrganizationSettingsService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long organizationId) {
+    public void delete(UUID organizationId) {
         OrganizationSettings entity = repository.findByOrganizationId(organizationId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
         repository.delete(entity);

@@ -6,13 +6,14 @@ import org.springframework.stereotype.Repository;
 import cl.privdata.organizationService.model.Department;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface DepartmentRepository extends JpaRepository<Department, Long> {
+public interface DepartmentRepository extends JpaRepository<Department, UUID> {
 
-    List<Department> findAllByOrganizationId(Long organizationId);
+    List<Department> findAllByOrganizationId(UUID organizationId);
 
-    List<Department> findAllByOrganizationIdAndIsActive(Long organizationId, Boolean isActive);
+    List<Department> findAllByOrganizationIdAndIsActive(UUID organizationId, Boolean isActive);
 
-    boolean existsByOrganizationIdAndName(Long organizationId, String name);
+    boolean existsByOrganizationIdAndName(UUID organizationId, String name);
 }
