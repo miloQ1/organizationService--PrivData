@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -29,14 +30,13 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = true)
-    public OrganizationResponse findById(Long id) {
+    public OrganizationResponse findById(UUID id) {
         return repository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
     }
 
     public OrganizationResponse create(OrganizationRequest request) {
-        // Un RUT solo puede pertenecer a una organización
         if (repository.existsByRut(request.rut())) {
             throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
         }
@@ -45,11 +45,10 @@ public class OrganizationService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public OrganizationResponse update(Long id, OrganizationRequest request) {
+    public OrganizationResponse update(UUID id, OrganizationRequest request) {
         Organization entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
 
-        // Validar RUT solo si cambió
         boolean rutChanged = !entity.getRut().equals(request.rut());
         if (rutChanged && repository.existsByRut(request.rut())) {
             throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
@@ -59,11 +58,10 @@ public class OrganizationService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         Organization entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
 
-        // No se puede eliminar una organización activa
         if (Boolean.TRUE.equals(entity.getIsActive())) {
             throw new BusinessRuleException("Cannot delete an active organization. Deactivate it first.");
         }

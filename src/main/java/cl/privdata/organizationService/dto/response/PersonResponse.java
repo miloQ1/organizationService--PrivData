@@ -3,15 +3,17 @@ package cl.privdata.organizationService.dto.response;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record OrganizationResponse(
+public record PersonResponse(
         UUID id,
-        String name,
-        String legalName,
+        UUID organizationId,
+        UUID departmentId,
+        String firstName,
+        String lastName,
+        String fullName,
         String rut,
-        String businessType,
         String email,
         String phone,
-        String address,
+        String position,
         boolean isActive,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

@@ -10,6 +10,7 @@ import cl.privdata.organizationService.repository.OrganizationSettingsRepository
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -25,7 +26,7 @@ public class OrganizationSettingsService {
     }
 
     @Transactional(readOnly = true)
-    public OrganizationSettingsResponse findByOrganization(Long organizationId) {
+    public OrganizationSettingsResponse findByOrganization(UUID organizationId) {
         return repository.findByOrganizationId(organizationId)
                 .map(this::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
@@ -44,7 +45,7 @@ public class OrganizationSettingsService {
         return toResponse(repository.saveAndFlush(entity));
     }
 
-    public void delete(Long organizationId) {
+    public void delete(UUID organizationId) {
         OrganizationSettings entity = repository.findByOrganizationId(organizationId)
                 .orElseThrow(() -> new ResourceNotFoundException("OrganizationSettings for Organization", organizationId));
         repository.delete(entity);
@@ -54,10 +55,8 @@ public class OrganizationSettingsService {
 
     private void mapToEntity(OrganizationSettingsRequest request, OrganizationSettings entity) {
         if (request.defaultLanguage() != null) entity.setDefaultLanguage(request.defaultLanguage());
-        entity.setRetentionPolicyDays(request.retentionPolicyDays());
         entity.setPrivacyEmail(request.privacyEmail());
         entity.setAllowDataExports(request.allowDataExports());
-        entity.setConsentExpiryAlertDays(request.consentExpiryAlertDays());
     }
 
     private OrganizationSettingsResponse toResponse(OrganizationSettings entity) {
@@ -65,10 +64,8 @@ public class OrganizationSettingsService {
                 entity.getId(),
                 entity.getOrganization().getId(),
                 entity.getDefaultLanguage(),
-                entity.getRetentionPolicyDays(),
                 entity.getPrivacyEmail(),
                 entity.getAllowDataExports(),
-                entity.getConsentExpiryAlertDays(),
                 entity.getUpdatedAt()
         );
     }
