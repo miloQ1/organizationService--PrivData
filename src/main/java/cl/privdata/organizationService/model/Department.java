@@ -11,8 +11,13 @@ import java.util.UUID;
 public class Department {
 
     @Id
+<<<<<<< HEAD:src/main/java/cl/privdata/organizationService/model/Department.java
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
+=======
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
+>>>>>>> 7d359ed (refactor, modelo nuevo):src/main/java/cl/privdata/organizationService/entity/Department.java
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

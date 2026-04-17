@@ -8,7 +8,7 @@ import cl.privdata.organizationService.model.Department;
 import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.DepartmentRepository;
 import cl.privdata.organizationService.repository.OrganizationRepository;
-import cl.privdata.organizationService.repository.OrganizationUserRepository;
+import cl.privdata.organizationService.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +21,14 @@ public class DepartmentService {
 
     private final DepartmentRepository repository;
     private final OrganizationRepository organizationRepository;
-    private final OrganizationUserRepository organizationUserRepository;
+    private final PersonRepository personRepository;
 
     public DepartmentService(DepartmentRepository repository,
                              OrganizationRepository organizationRepository,
-                             OrganizationUserRepository organizationUserRepository) {
+                             PersonRepository personRepository) {
         this.repository = repository;
         this.organizationRepository = organizationRepository;
-        this.organizationUserRepository = organizationUserRepository;
+        this.personRepository = personRepository;
     }
 
     @Transactional(readOnly = true)
@@ -56,12 +56,10 @@ public class DepartmentService {
         Organization organization = organizationRepository.findById(request.organizationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", request.organizationId()));
 
-        // Solo se pueden crear departamentos en organizaciones activas
         if (!Boolean.TRUE.equals(organization.getIsActive())) {
             throw new BusinessRuleException("Cannot add a department to an inactive organization.");
         }
 
-        // El nombre del departamento debe ser único dentro de la organización
         if (repository.existsByOrganizationIdAndName(request.organizationId(), request.name())) {
             throw new BusinessRuleException("Department name '" + request.name() + "' already exists in this organization.");
         }
@@ -78,7 +76,6 @@ public class DepartmentService {
         Organization organization = organizationRepository.findById(request.organizationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", request.organizationId()));
 
-        // Validar nombre único solo si cambió
         boolean nameChanged = !entity.getName().equals(request.name());
         boolean orgChanged = !entity.getOrganization().getId().equals(request.organizationId());
         if ((nameChanged || orgChanged) && repository.existsByOrganizationIdAndName(request.organizationId(), request.name())) {
@@ -94,19 +91,19 @@ public class DepartmentService {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
 
-        // No eliminar un departamento que tenga usuarios activos asignados
-        boolean hasActiveUsers = !organizationUserRepository.findAllByDepartmentId(id).stream()
-                .filter(u -> Boolean.TRUE.equals(u.getIsActive()))
-                .toList()
-                .isEmpty();
-        if (hasActiveUsers) {
-            throw new BusinessRuleException("Cannot delete a department with active users assigned.");
+        boolean hasActivePersons = personRepository.findAllByDepartmentId(id).stream()
+                .anyMatch(p -> Boolean.TRUE.equals(p.getIsActive()));
+        if (hasActivePersons) {
+            throw new BusinessRuleException("Cannot delete a department with active persons assigned.");
         }
 
         repository.delete(entity);
     }
 
+<<<<<<< HEAD
     // Borrado lógico: desactiva el departamento sin eliminarlo
+=======
+>>>>>>> 7d359ed (refactor, modelo nuevo)
     public DepartmentResponse deactivate(UUID id) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));

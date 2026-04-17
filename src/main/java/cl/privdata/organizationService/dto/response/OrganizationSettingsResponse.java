@@ -7,9 +7,7 @@ public record OrganizationSettingsResponse(
         UUID id,
         UUID organizationId,
         String defaultLanguage,
-        Integer retentionPolicyDays,
         String privacyEmail,
         boolean allowDataExports,
-        Integer consentExpiryAlertDays,
         LocalDateTime updatedAt
 ) {}

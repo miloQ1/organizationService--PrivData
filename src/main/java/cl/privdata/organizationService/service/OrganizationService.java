@@ -37,7 +37,6 @@ public class OrganizationService {
     }
 
     public OrganizationResponse create(OrganizationRequest request) {
-        // Un RUT solo puede pertenecer a una organización
         if (repository.existsByRut(request.rut())) {
             throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
         }
@@ -50,7 +49,6 @@ public class OrganizationService {
         Organization entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
 
-        // Validar RUT solo si cambió
         boolean rutChanged = !entity.getRut().equals(request.rut());
         if (rutChanged && repository.existsByRut(request.rut())) {
             throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
@@ -64,7 +62,6 @@ public class OrganizationService {
         Organization entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
 
-        // No se puede eliminar una organización activa
         if (Boolean.TRUE.equals(entity.getIsActive())) {
             throw new BusinessRuleException("Cannot delete an active organization. Deactivate it first.");
         }

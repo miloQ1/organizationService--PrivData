@@ -12,8 +12,13 @@ import java.util.UUID;
 public class Organization {
 
     @Id
+<<<<<<< HEAD:src/main/java/cl/privdata/organizationService/model/Organization.java
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
+=======
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
+>>>>>>> 7d359ed (refactor, modelo nuevo):src/main/java/cl/privdata/organizationService/entity/Organization.java
     private UUID id;
 
     @Column(name = "name", nullable = false, length = 255)

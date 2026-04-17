@@ -21,7 +21,6 @@ public class DepartmentController {
         this.service = service;
     }
 
-    // Lista todas las áreas internas definidas
     @GetMapping
     public ResponseEntity<List<DepartmentResponse>> findAll() {
         return ResponseEntity.ok(service.findAll());
@@ -32,20 +31,17 @@ public class DepartmentController {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
-    // Crea un nuevo departamento en la estructura
     @PostMapping
     public ResponseEntity<DepartmentResponse> create(@Valid @RequestBody DepartmentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
-    // Edita la descripción o nombre de un área
     @PutMapping("/{id}")
     public ResponseEntity<DepartmentResponse> update(@PathVariable UUID id,
                                                       @Valid @RequestBody DepartmentRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
-    // Desactiva un departamento (borrado lógico)
     @DeleteMapping("/{id}")
     public ResponseEntity<DepartmentResponse> deactivate(@PathVariable UUID id) {
         return ResponseEntity.ok(service.deactivate(id));

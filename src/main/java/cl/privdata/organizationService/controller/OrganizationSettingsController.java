@@ -19,13 +19,11 @@ public class OrganizationSettingsController {
         this.service = service;
     }
 
-    // Consulta políticas globales: retención, alertas de vencimiento, correo de privacidad
     @GetMapping
     public ResponseEntity<OrganizationSettingsResponse> findByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findByOrganization(organizationId));
     }
 
-    // Actualiza los parámetros críticos de cumplimiento
     @PutMapping
     public ResponseEntity<OrganizationSettingsResponse> createOrUpdate(@Valid @RequestBody OrganizationSettingsRequest request) {
         return ResponseEntity.ok(service.createOrUpdate(request));

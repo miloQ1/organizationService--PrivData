@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
+import java.util.UUID;
+
 public record OrganizationSettingsRequest(
 
         @NotNull(message = "El ID de la organización es obligatorio")
@@ -11,13 +13,8 @@ public record OrganizationSettingsRequest(
 
         String defaultLanguage,
 
-        @NotNull(message = "Los días de retención son obligatorios")
-        Integer retentionPolicyDays,
-
         @Email(message = "Correo de privacidad inválido")
         String privacyEmail,
 
-        boolean allowDataExports,
-
-        Integer consentExpiryAlertDays
+        boolean allowDataExports
 ) {}

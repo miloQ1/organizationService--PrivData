@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d359ed (refactor, modelo nuevo)
 
 @Service
 @Transactional
@@ -56,10 +59,8 @@ public class OrganizationSettingsService {
 
     private void mapToEntity(OrganizationSettingsRequest request, OrganizationSettings entity) {
         if (request.defaultLanguage() != null) entity.setDefaultLanguage(request.defaultLanguage());
-        entity.setRetentionPolicyDays(request.retentionPolicyDays());
         entity.setPrivacyEmail(request.privacyEmail());
         entity.setAllowDataExports(request.allowDataExports());
-        entity.setConsentExpiryAlertDays(request.consentExpiryAlertDays());
     }
 
     private OrganizationSettingsResponse toResponse(OrganizationSettings entity) {
@@ -67,10 +68,8 @@ public class OrganizationSettingsService {
                 entity.getId(),
                 entity.getOrganization().getId(),
                 entity.getDefaultLanguage(),
-                entity.getRetentionPolicyDays(),
                 entity.getPrivacyEmail(),
                 entity.getAllowDataExports(),
-                entity.getConsentExpiryAlertDays(),
                 entity.getUpdatedAt()
         );
     }
