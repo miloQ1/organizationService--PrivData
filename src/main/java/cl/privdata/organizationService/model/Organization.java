@@ -12,13 +12,8 @@ import java.util.UUID;
 public class Organization {
 
     @Id
-<<<<<<< HEAD:src/main/java/cl/privdata/organizationService/entity/Organization.java
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
-=======
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", updatable = false, nullable = false)
->>>>>>> c456467ade925ba47fbe815d89ac6e2d3fcec8a5:src/main/java/cl/privdata/organizationService/model/Organization.java
     private UUID id;
 
     @Column(name = "name", nullable = false, length = 255)

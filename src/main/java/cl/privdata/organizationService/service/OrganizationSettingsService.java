@@ -11,10 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-<<<<<<< HEAD
-=======
-
->>>>>>> c456467ade925ba47fbe815d89ac6e2d3fcec8a5
 
 @Service
 @Transactional

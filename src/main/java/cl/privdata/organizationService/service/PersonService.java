@@ -2,9 +2,9 @@ package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.PersonRequest;
 import cl.privdata.organizationService.dto.response.PersonResponse;
-import cl.privdata.organizationService.entity.Department;
-import cl.privdata.organizationService.entity.Organization;
-import cl.privdata.organizationService.entity.Person;
+import cl.privdata.organizationService.model.Department;
+import cl.privdata.organizationService.model.Organization;
+import cl.privdata.organizationService.model.Person;
 import cl.privdata.organizationService.exception.BusinessRuleException;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
 import cl.privdata.organizationService.repository.DepartmentRepository;
