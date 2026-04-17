@@ -4,17 +4,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
-import java.util.UUID;
-
-public record DepartmentRequest(
+public record OrganizationUserRequest(
 
         @NotNull(message = "El ID de la organización es obligatorio")
         UUID organizationId,
 
-        @NotBlank(message = "El nombre del departamento es obligatorio")
-        String name,
+        @NotNull(message = "El ID del usuario (Auth) es obligatorio")
+        Long userId,
 
-        String description,
+        UUID departmentId,
+
+        @NotBlank(message = "El cargo o posición es obligatorio")
+        String position,
 
         boolean isActive
 ) {}

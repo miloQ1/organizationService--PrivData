@@ -1,4 +1,4 @@
-package cl.privdata.organizationService.entity;
+package cl.privdata.organizationService.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,8 +11,13 @@ import java.util.UUID;
 public class Department {
 
     @Id
+<<<<<<< HEAD:src/main/java/cl/privdata/organizationService/entity/Department.java
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
+=======
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false)
+>>>>>>> c456467ade925ba47fbe815d89ac6e2d3fcec8a5:src/main/java/cl/privdata/organizationService/model/Department.java
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

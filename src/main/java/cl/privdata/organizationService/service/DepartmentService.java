@@ -2,10 +2,10 @@ package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.DepartmentRequest;
 import cl.privdata.organizationService.dto.response.DepartmentResponse;
-import cl.privdata.organizationService.entity.Department;
-import cl.privdata.organizationService.entity.Organization;
 import cl.privdata.organizationService.exception.BusinessRuleException;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
+import cl.privdata.organizationService.model.Department;
+import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.DepartmentRepository;
 import cl.privdata.organizationService.repository.OrganizationRepository;
 import cl.privdata.organizationService.repository.PersonRepository;
@@ -100,6 +100,10 @@ public class DepartmentService {
         repository.delete(entity);
     }
 
+<<<<<<< HEAD
+=======
+    // Borrado lógico: desactiva el departamento sin eliminarlo
+>>>>>>> c456467ade925ba47fbe815d89ac6e2d3fcec8a5
     public DepartmentResponse deactivate(UUID id) {
         Department entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department", id));
