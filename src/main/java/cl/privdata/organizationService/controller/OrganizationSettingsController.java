@@ -1,7 +1,7 @@
 package cl.privdata.organizationService.controller;
 
-import cl.privdata.organizationService.dto.request.OrganizationSettingsRequest;
-import cl.privdata.organizationService.dto.response.OrganizationSettingsResponse;
+import cl.privdata.organizationService.dto.request.OrganizationSettingsRequestDTO;
+import cl.privdata.organizationService.dto.response.OrganizationSettingsResponseDTO;
 import cl.privdata.organizationService.service.OrganizationSettingsService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,12 @@ public class OrganizationSettingsController {
     }
 
     @GetMapping
-    public ResponseEntity<OrganizationSettingsResponse> findByOrganization(@RequestParam UUID organizationId) {
+    public ResponseEntity<OrganizationSettingsResponseDTO> findByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findByOrganization(organizationId));
     }
 
     @PutMapping
-    public ResponseEntity<OrganizationSettingsResponse> createOrUpdate(@Valid @RequestBody OrganizationSettingsRequest request) {
+    public ResponseEntity<OrganizationSettingsResponseDTO> createOrUpdate(@Valid @RequestBody OrganizationSettingsRequestDTO request) {
         return ResponseEntity.ok(service.createOrUpdate(request));
     }
 }

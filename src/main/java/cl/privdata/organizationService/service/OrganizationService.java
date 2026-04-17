@@ -1,100 +1,123 @@
 package cl.privdata.organizationService.service;
 
-import cl.privdata.organizationService.dto.request.OrganizationRequest;
-import cl.privdata.organizationService.dto.response.OrganizationResponse;
+import cl.privdata.organizationService.dto.request.OrganizationCreateRequestDTO;
+import cl.privdata.organizationService.dto.request.OrganizationRequestDTO;
+import cl.privdata.organizationService.dto.request.OrganizationStatusUpdateRequestDTO;
+import cl.privdata.organizationService.dto.request.OrganizationUpdateRequestDTO;
+import cl.privdata.organizationService.dto.response.OrganizationResponseDTO;
 import cl.privdata.organizationService.exception.BusinessRuleException;
 import cl.privdata.organizationService.exception.ResourceNotFoundException;
 import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.OrganizationRepository;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+
 @Transactional
 public class OrganizationService {
 
-    private final OrganizationRepository repository;
+    private final OrganizationRepository organizationRepository;
 
-    public OrganizationService(OrganizationRepository repository) {
-        this.repository = repository;
+    public OrganizationService(OrganizationRepository organizationRepository) {
+        this.organizationRepository = organizationRepository;
+    }
+
+
+    public OrganizationResponseDTO create(OrganizationCreateRequestDTO request) {
+        if (organizationRepository.existsByRut(request.getRut())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ya existe una organización registrada con ese RUT"
+            );
+        }
+
+        Organization organization = new Organization();
+        organization.setName(request.getName());
+        organization.setLegalName(request.getLegalName());
+        organization.setRut(request.getRut());
+        organization.setBusinessType(request.getBusinessType());
+        organization.setEmail(request.getEmail());
+        organization.setPhone(request.getPhone());
+        organization.setAddress(request.getAddress());
+        organization.setIsActive(true);
+
+        Organization saved = organizationRepository.save(organization);
+        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public List<OrganizationResponse> findAll() {
-        return repository.findAll().stream()
+    public List<OrganizationResponseDTO> findAll() {
+        return organizationRepository.findAll()
+                .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public OrganizationResponse findById(UUID id) {
-        return repository.findById(id)
-                .map(this::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
+    public OrganizationResponseDTO findById(UUID organizationId) {
+        Organization organization = getOrganizationOrThrow(organizationId);
+        return toResponse(organization);
     }
 
-    public OrganizationResponse create(OrganizationRequest request) {
-        if (repository.existsByRut(request.rut())) {
-            throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
-        }
-        Organization entity = new Organization();
-        mapToEntity(request, entity);
-        return toResponse(repository.saveAndFlush(entity));
-    }
+    public OrganizationResponseDTO update(UUID organizationId, OrganizationUpdateRequestDTO request) {
+        Organization organization = getOrganizationOrThrow(organizationId);
 
-    public OrganizationResponse update(UUID id, OrganizationRequest request) {
-        Organization entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
-
-        boolean rutChanged = !entity.getRut().equals(request.rut());
-        if (rutChanged && repository.existsByRut(request.rut())) {
-            throw new BusinessRuleException("An organization with RUT '" + request.rut() + "' already exists.");
+        if (organizationRepository.existsByRutAndIdNot(request.getRut(), organizationId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ya existe otra organización registrada con ese RUT"
+            );
         }
 
-        mapToEntity(request, entity);
-        return toResponse(repository.saveAndFlush(entity));
+        organization.setName(request.getName());
+        organization.setLegalName(request.getLegalName());
+        organization.setRut(request.getRut());
+        organization.setBusinessType(request.getBusinessType());
+        organization.setEmail(request.getEmail());
+        organization.setPhone(request.getPhone());
+        organization.setAddress(request.getAddress());
+
+        Organization updated = organizationRepository.save(organization);
+        return toResponse(updated);
     }
 
-    public void delete(UUID id) {
-        Organization entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", id));
+    public OrganizationResponseDTO updateStatus(UUID organizationId, OrganizationStatusUpdateRequestDTO request) {
+        Organization organization = getOrganizationOrThrow(organizationId);
+        organization.setIsActive(request.getIsActive());
 
-        if (Boolean.TRUE.equals(entity.getIsActive())) {
-            throw new BusinessRuleException("Cannot delete an active organization. Deactivate it first.");
-        }
-
-        repository.deleteById(id);
+        Organization updated = organizationRepository.save(organization);
+        return toResponse(updated);
     }
 
-    // --- Mapping helpers ---
-
-    private void mapToEntity(OrganizationRequest request, Organization entity) {
-        entity.setName(request.name());
-        entity.setLegalName(request.legalName());
-        entity.setRut(request.rut());
-        entity.setBusinessType(request.businessType());
-        entity.setEmail(request.email());
-        entity.setPhone(request.phone());
-        entity.setAddress(request.address());
-        entity.setIsActive(request.isActive());
+    private Organization getOrganizationOrThrow(UUID organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Organización no encontrada"
+                ));
     }
 
-    private OrganizationResponse toResponse(Organization entity) {
-        return new OrganizationResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getLegalName(),
-                entity.getRut(),
-                entity.getBusinessType(),
-                entity.getEmail(),
-                entity.getPhone(),
-                entity.getAddress(),
-                entity.getIsActive(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
+    private OrganizationResponseDTO toResponse(Organization organization) {
+        return new OrganizationResponseDTO(
+                organization.getId(),
+                organization.getName(),
+                organization.getLegalName(),
+                organization.getRut(),
+                organization.getBusinessType(),
+                organization.getEmail(),
+                organization.getPhone(),
+                organization.getAddress(),
+                organization.getIsActive(),
+                organization.getCreatedAt(),
+                organization.getUpdatedAt()
         );
     }
 }

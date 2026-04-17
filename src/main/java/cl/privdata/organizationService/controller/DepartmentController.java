@@ -1,7 +1,7 @@
 package cl.privdata.organizationService.controller;
 
-import cl.privdata.organizationService.dto.request.DepartmentRequest;
-import cl.privdata.organizationService.dto.response.DepartmentResponse;
+import cl.privdata.organizationService.dto.request.DepartmentRequestDTO;
+import cl.privdata.organizationService.dto.response.DepartmentResponseDTO;
 import cl.privdata.organizationService.service.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,28 +22,28 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DepartmentResponse>> findAll() {
+    public ResponseEntity<List<DepartmentResponseDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/organization/{organizationId}")
-    public ResponseEntity<List<DepartmentResponse>> findAllByOrganization(@PathVariable UUID organizationId) {
+    public ResponseEntity<List<DepartmentResponseDTO>> findAllByOrganization(@PathVariable UUID organizationId) {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
     @PostMapping
-    public ResponseEntity<DepartmentResponse> create(@Valid @RequestBody DepartmentRequest request) {
+    public ResponseEntity<DepartmentResponseDTO> create(@Valid @RequestBody DepartmentRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> update(@PathVariable UUID id,
-                                                      @Valid @RequestBody DepartmentRequest request) {
+    public ResponseEntity<DepartmentResponseDTO> update(@PathVariable UUID id,
+                                                      @Valid @RequestBody DepartmentRequestDTO request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> deactivate(@PathVariable UUID id) {
+    public ResponseEntity<DepartmentResponseDTO> deactivate(@PathVariable UUID id) {
         return ResponseEntity.ok(service.deactivate(id));
     }
 }

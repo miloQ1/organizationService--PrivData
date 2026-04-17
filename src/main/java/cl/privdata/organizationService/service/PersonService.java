@@ -1,7 +1,7 @@
 package cl.privdata.organizationService.service;
 
-import cl.privdata.organizationService.dto.request.PersonRequest;
-import cl.privdata.organizationService.dto.response.PersonResponse;
+import cl.privdata.organizationService.dto.request.PersonRequestDTO;
+import cl.privdata.organizationService.dto.response.PersonResponseDTO;
 import cl.privdata.organizationService.model.Department;
 import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.model.Person;
@@ -33,71 +33,153 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public List<PersonResponse> findAllByOrganization(UUID organizationId) {
+    public List<PersonResponseDTO> findAllByOrganization(UUID organizationId) {
         return repository.findAllByOrganizationId(organizationId).stream()
-                .map(this::toResponse)
+                .map(entity -> {
+                    UUID departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
+                    PersonResponseDTO response = new PersonResponseDTO();
+                    response.setId(entity.getId());
+                    response.setOrganizationId(entity.getOrganization().getId());
+                    response.setDepartmentId(departmentId);
+                    response.setFirstName(entity.getFirstName());
+                    response.setLastName(entity.getLastName());
+                    response.setFullName(entity.getFullName());
+                    response.setRut(entity.getRut());
+                    response.setEmail(entity.getEmail());
+                    response.setPhone(entity.getPhone());
+                    response.setPosition(entity.getPosition());
+                    response.setActive(entity.getIsActive());
+                    response.setCreatedAt(entity.getCreatedAt());
+                    response.setUpdatedAt(entity.getUpdatedAt());
+                    return response;
+                })
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public PersonResponse findById(UUID id) {
+    public PersonResponseDTO findById(UUID id) {
         return repository.findById(id)
-                .map(this::toResponse)
+                .map(entity -> {
+                    UUID departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
+                    PersonResponseDTO response = new PersonResponseDTO();
+                    response.setId(entity.getId());
+                    response.setOrganizationId(entity.getOrganization().getId());
+                    response.setDepartmentId(departmentId);
+                    response.setFirstName(entity.getFirstName());
+                    response.setLastName(entity.getLastName());
+                    response.setFullName(entity.getFullName());
+                    response.setRut(entity.getRut());
+                    response.setEmail(entity.getEmail());
+                    response.setPhone(entity.getPhone());
+                    response.setPosition(entity.getPosition());
+                    response.setActive(entity.getIsActive());
+                    response.setCreatedAt(entity.getCreatedAt());
+                    response.setUpdatedAt(entity.getUpdatedAt());
+                    return response;
+                })
                 .orElseThrow(() -> new ResourceNotFoundException("Person", id));
     }
 
-    public PersonResponse create(PersonRequest request) {
-        Organization organization = organizationRepository.findById(request.organizationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.organizationId()));
+    public PersonResponseDTO create(PersonRequestDTO request) {
+        Organization organization = organizationRepository.findById(request.getOrganizationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.getOrganizationId()));
 
         if (!Boolean.TRUE.equals(organization.getIsActive())) {
             throw new BusinessRuleException("Cannot add a person to an inactive organization.");
         }
 
         // Unicidad de RUT dentro de la organización (si se proporciona)
-        if (request.rut() != null && !request.rut().isBlank()
-                && repository.existsByOrganizationIdAndRut(request.organizationId(), request.rut())) {
-            throw new BusinessRuleException("A person with RUT '" + request.rut() + "' already exists in this organization.");
+        if (request.getRut() != null && !request.getRut().isBlank()
+                && repository.existsByOrganizationIdAndRut(request.getOrganizationId(), request.getRut())) {
+            throw new BusinessRuleException("A person with RUT '" + request.getRut() + "' already exists in this organization.");
         }
 
         // Unicidad de email dentro de la organización (si se proporciona)
-        if (request.email() != null && !request.email().isBlank()
-                && repository.existsByOrganizationIdAndEmail(request.organizationId(), request.email())) {
-            throw new BusinessRuleException("A person with email '" + request.email() + "' already exists in this organization.");
+        if (request.getEmail() != null && !request.getEmail().isBlank()
+                && repository.existsByOrganizationIdAndEmail(request.getOrganizationId(), request.getEmail())) {
+            throw new BusinessRuleException("A person with email '" + request.getEmail() + "' already exists in this organization.");
         }
 
         Person entity = new Person();
         entity.setOrganization(organization);
         resolveAndSetDepartment(request, entity);
-        mapToEntity(request, entity);
-        return toResponse(repository.saveAndFlush(entity));
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setFullName(request.getFirstName() + " " + request.getLastName());
+        entity.setRut(request.getRut());
+        entity.setEmail(request.getEmail());
+        entity.setPhone(request.getPhone());
+        entity.setPosition(request.getPosition());
+        entity.setIsActive(request.isActive());
+        
+        Person saved = repository.saveAndFlush(entity);
+        UUID departmentId = saved.getDepartment() != null ? saved.getDepartment().getId() : null;
+        PersonResponseDTO response = new PersonResponseDTO();
+        response.setId(saved.getId());
+        response.setOrganizationId(saved.getOrganization().getId());
+        response.setDepartmentId(departmentId);
+        response.setFirstName(saved.getFirstName());
+        response.setLastName(saved.getLastName());
+        response.setFullName(saved.getFullName());
+        response.setRut(saved.getRut());
+        response.setEmail(saved.getEmail());
+        response.setPhone(saved.getPhone());
+        response.setPosition(saved.getPosition());
+        response.setActive(saved.getIsActive());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+        return response;
     }
 
-    public PersonResponse update(UUID id, PersonRequest request) {
+    public PersonResponseDTO update(UUID id, PersonRequestDTO request) {
         Person entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Person", id));
-        Organization organization = organizationRepository.findById(request.organizationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.organizationId()));
+        Organization organization = organizationRepository.findById(request.getOrganizationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.getOrganizationId()));
 
         // Validar RUT único solo si cambió
-        boolean rutChanged = request.rut() != null && !request.rut().equals(entity.getRut());
-        boolean orgChanged = !entity.getOrganization().getId().equals(request.organizationId());
-        if ((rutChanged || orgChanged) && request.rut() != null && !request.rut().isBlank()
-                && repository.existsByOrganizationIdAndRut(request.organizationId(), request.rut())) {
-            throw new BusinessRuleException("A person with RUT '" + request.rut() + "' already exists in this organization.");
+        boolean rutChanged = request.getRut() != null && !request.getRut().equals(entity.getRut());
+        boolean orgChanged = !entity.getOrganization().getId().equals(request.getOrganizationId());
+        if ((rutChanged || orgChanged) && request.getRut() != null && !request.getRut().isBlank()
+                && repository.existsByOrganizationIdAndRut(request.getOrganizationId(), request.getRut())) {
+            throw new BusinessRuleException("A person with RUT '" + request.getRut() + "' already exists in this organization.");
         }
 
         // Validar email único solo si cambió
-        boolean emailChanged = request.email() != null && !request.email().equals(entity.getEmail());
-        if ((emailChanged || orgChanged) && request.email() != null && !request.email().isBlank()
-                && repository.existsByOrganizationIdAndEmail(request.organizationId(), request.email())) {
-            throw new BusinessRuleException("A person with email '" + request.email() + "' already exists in this organization.");
+        boolean emailChanged = request.getEmail() != null && !request.getEmail().equals(entity.getEmail());
+        if ((emailChanged || orgChanged) && request.getEmail() != null && !request.getEmail().isBlank()
+                && repository.existsByOrganizationIdAndEmail(request.getOrganizationId(), request.getEmail())) {
+            throw new BusinessRuleException("A person with email '" + request.getEmail() + "' already exists in this organization.");
         }
 
         entity.setOrganization(organization);
         resolveAndSetDepartment(request, entity);
-        mapToEntity(request, entity);
-        return toResponse(repository.saveAndFlush(entity));
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setFullName(request.getFirstName() + " " + request.getLastName());
+        entity.setRut(request.getRut());
+        entity.setEmail(request.getEmail());
+        entity.setPhone(request.getPhone());
+        entity.setPosition(request.getPosition());
+        entity.setIsActive(request.isActive());
+        
+        Person saved = repository.saveAndFlush(entity);
+        UUID departmentId = saved.getDepartment() != null ? saved.getDepartment().getId() : null;
+        PersonResponseDTO response = new PersonResponseDTO();
+        response.setId(saved.getId());
+        response.setOrganizationId(saved.getOrganization().getId());
+        response.setDepartmentId(departmentId);
+        response.setFirstName(saved.getFirstName());
+        response.setLastName(saved.getLastName());
+        response.setFullName(saved.getFullName());
+        response.setRut(saved.getRut());
+        response.setEmail(saved.getEmail());
+        response.setPhone(saved.getPhone());
+        response.setPosition(saved.getPosition());
+        response.setActive(saved.getIsActive());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+        return response;
     }
 
     public void delete(UUID id) {
@@ -107,55 +189,42 @@ public class PersonService {
         repository.deleteById(id);
     }
 
-    public PersonResponse updateStatus(UUID id, Boolean isActive) {
+    public PersonResponseDTO updateStatus(UUID id, Boolean isActive) {
         Person entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Person", id));
         entity.setIsActive(isActive);
-        return toResponse(repository.saveAndFlush(entity));
+        
+        Person saved = repository.saveAndFlush(entity);
+        UUID departmentId = saved.getDepartment() != null ? saved.getDepartment().getId() : null;
+        PersonResponseDTO response = new PersonResponseDTO();
+        response.setId(saved.getId());
+        response.setOrganizationId(saved.getOrganization().getId());
+        response.setDepartmentId(departmentId);
+        response.setFirstName(saved.getFirstName());
+        response.setLastName(saved.getLastName());
+        response.setFullName(saved.getFullName());
+        response.setRut(saved.getRut());
+        response.setEmail(saved.getEmail());
+        response.setPhone(saved.getPhone());
+        response.setPosition(saved.getPosition());
+        response.setActive(saved.getIsActive());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+        return response;
     }
 
-    // --- Mapping helpers ---
+    // --- Business logic helper ---
 
-    private void resolveAndSetDepartment(PersonRequest request, Person entity) {
-        if (request.departmentId() != null) {
-            Department department = departmentRepository.findById(request.departmentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Department", request.departmentId()));
-            if (!department.getOrganization().getId().equals(request.organizationId())) {
+    private void resolveAndSetDepartment(PersonRequestDTO request, Person entity) {
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department", request.getDepartmentId()));
+            if (!department.getOrganization().getId().equals(request.getOrganizationId())) {
                 throw new BusinessRuleException("Department does not belong to the specified organization.");
             }
             entity.setDepartment(department);
         } else {
             entity.setDepartment(null);
         }
-    }
-
-    private void mapToEntity(PersonRequest request, Person entity) {
-        entity.setFirstName(request.firstName());
-        entity.setLastName(request.lastName());
-        entity.setFullName(request.firstName() + " " + request.lastName());
-        entity.setRut(request.rut());
-        entity.setEmail(request.email());
-        entity.setPhone(request.phone());
-        entity.setPosition(request.position());
-        entity.setIsActive(request.isActive());
-    }
-
-    private PersonResponse toResponse(Person entity) {
-        UUID departmentId = entity.getDepartment() != null ? entity.getDepartment().getId() : null;
-        return new PersonResponse(
-                entity.getId(),
-                entity.getOrganization().getId(),
-                departmentId,
-                entity.getFirstName(),
-                entity.getLastName(),
-                entity.getFullName(),
-                entity.getRut(),
-                entity.getEmail(),
-                entity.getPhone(),
-                entity.getPosition(),
-                entity.getIsActive(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
     }
 }

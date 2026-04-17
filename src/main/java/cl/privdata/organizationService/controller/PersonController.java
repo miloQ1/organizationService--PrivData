@@ -1,8 +1,8 @@
 package cl.privdata.organizationService.controller;
 
-import cl.privdata.organizationService.dto.request.PersonRequest;
-import cl.privdata.organizationService.dto.request.StatusUpdateRequest;
-import cl.privdata.organizationService.dto.response.PersonResponse;
+import cl.privdata.organizationService.dto.request.PersonRequestDTO;
+import cl.privdata.organizationService.dto.request.StatusUpdateRequestDTO;
+import cl.privdata.organizationService.dto.response.PersonResponseDTO;
 import cl.privdata.organizationService.service.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,30 +23,30 @@ public class PersonController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PersonResponse>> findAllByOrganization(@RequestParam UUID organizationId) {
+    public ResponseEntity<List<PersonResponseDTO>> findAllByOrganization(@RequestParam UUID organizationId) {
         return ResponseEntity.ok(service.findAllByOrganization(organizationId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PersonResponse> findById(@PathVariable UUID id) {
+    public ResponseEntity<PersonResponseDTO> findById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<PersonResponse> create(@Valid @RequestBody PersonRequest request) {
+    public ResponseEntity<PersonResponseDTO> create(@Valid @RequestBody PersonRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonResponse> update(@PathVariable UUID id,
-                                                  @Valid @RequestBody PersonRequest request) {
+    public ResponseEntity<PersonResponseDTO> update(@PathVariable UUID id,
+                                                  @Valid @RequestBody PersonRequestDTO request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<PersonResponse> updateStatus(@PathVariable UUID id,
-                                                        @Valid @RequestBody StatusUpdateRequest request) {
-        return ResponseEntity.ok(service.updateStatus(id, request.isActive()));
+    public ResponseEntity<PersonResponseDTO> updateStatus(@PathVariable UUID id,
+                                                        @Valid @RequestBody StatusUpdateRequestDTO request) {
+        return ResponseEntity.ok(service.updateStatus(id, request.getIsActive()));
     }
 
     @DeleteMapping("/{id}")

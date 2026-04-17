@@ -17,6 +17,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
     Optional<Organization> findByEmail(String email);
 
     List<Organization> findAllByIsActive(Boolean isActive);
+    boolean existsByRutAndIdNot(String rut, UUID id);
 
+    
     boolean existsByRut(String rut);
 }
