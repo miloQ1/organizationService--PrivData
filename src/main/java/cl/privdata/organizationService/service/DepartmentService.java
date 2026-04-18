@@ -1,167 +1,145 @@
 package cl.privdata.organizationService.service;
 
-import cl.privdata.organizationService.dto.request.DepartmentRequestDTO;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import cl.privdata.organizationService.dto.request.DepartmentCreateRequestDTO;
+import cl.privdata.organizationService.dto.request.DepartmentStatusUpdateRequestDTO;
+import cl.privdata.organizationService.dto.request.DepartmentUpdateRequestDTO;
 import cl.privdata.organizationService.dto.response.DepartmentResponseDTO;
-import cl.privdata.organizationService.exception.BusinessRuleException;
-import cl.privdata.organizationService.exception.ResourceNotFoundException;
 import cl.privdata.organizationService.model.Department;
 import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.DepartmentRepository;
 import cl.privdata.organizationService.repository.OrganizationRepository;
-import cl.privdata.organizationService.repository.PersonRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
 public class DepartmentService {
 
-    private final DepartmentRepository repository;
+    private final DepartmentRepository departmentRepository;
     private final OrganizationRepository organizationRepository;
-    private final PersonRepository personRepository;
 
-    public DepartmentService(DepartmentRepository repository,
-                             OrganizationRepository organizationRepository,
-                             PersonRepository personRepository) {
-        this.repository = repository;
+    public DepartmentService(
+            DepartmentRepository departmentRepository,
+            OrganizationRepository organizationRepository
+    ) {
+        this.departmentRepository = departmentRepository;
         this.organizationRepository = organizationRepository;
-        this.personRepository = personRepository;
+    }
+
+    public DepartmentResponseDTO create(UUID organizationId, DepartmentCreateRequestDTO request) {
+        Organization organization = getOrganizationOrThrow(organizationId);
+
+        if (departmentRepository.existsByOrganization_IdAndName(organizationId, request.getName())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ya existe un departamento con ese nombre en la organización"
+            );
+        }
+
+        Department department = new Department();
+        department.setOrganization(organization);
+        department.setName(request.getName());
+        department.setDescription(request.getDescription());
+        department.setIsActive(true);
+
+        Department saved = departmentRepository.save(department);
+
+        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public List<DepartmentResponseDTO> findAll() {
-        return repository.findAll().stream()
-                .map(entity -> {
-                    DepartmentResponseDTO response = new DepartmentResponseDTO();
-                    response.setId(entity.getId());
-                    response.setOrganizationId(entity.getOrganization().getId());
-                    response.setName(entity.getName());
-                    response.setDescription(entity.getDescription());
-                    response.setActive(entity.getIsActive());
-                    response.setCreatedAt(entity.getCreatedAt());
-                    return response;
-                })
+    public List<DepartmentResponseDTO> findAllByOrganization(UUID organizationId, Boolean active) {
+        getOrganizationOrThrow(organizationId);
+
+        List<Department> departments;
+
+        if (active == null) {
+            departments = departmentRepository.findByOrganization_Id(organizationId);
+        } else {
+            departments = departmentRepository.findByOrganization_IdAndIsActive(organizationId, active);
+        }
+
+        return departments.stream()
+                .map(this::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<DepartmentResponseDTO> findAllByOrganization(UUID organizationId) {
-        return repository.findAllByOrganizationId(organizationId).stream()
-                .map(entity -> {
-                    DepartmentResponseDTO response = new DepartmentResponseDTO();
-                    response.setId(entity.getId());
-                    response.setOrganizationId(entity.getOrganization().getId());
-                    response.setName(entity.getName());
-                    response.setDescription(entity.getDescription());
-                    response.setActive(entity.getIsActive());
-                    response.setCreatedAt(entity.getCreatedAt());
-                    return response;
-                })
-                .toList();
+    public DepartmentResponseDTO findById(UUID organizationId, UUID departmentId) {
+        Department department = getDepartmentOrThrow(organizationId, departmentId);
+        return toResponse(department);
     }
 
-    @Transactional(readOnly = true)
-    public DepartmentResponseDTO findById(UUID id) {
-        return repository.findById(id)
-                .map(entity -> {
-                    DepartmentResponseDTO response = new DepartmentResponseDTO();
-                    response.setId(entity.getId());
-                    response.setOrganizationId(entity.getOrganization().getId());
-                    response.setName(entity.getName());
-                    response.setDescription(entity.getDescription());
-                    response.setActive(entity.getIsActive());
-                    response.setCreatedAt(entity.getCreatedAt());
-                    return response;
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Department", id));
-    }
+    public DepartmentResponseDTO update(
+            UUID organizationId,
+            UUID departmentId,
+            DepartmentUpdateRequestDTO request
+    ) {
+        Department department = getDepartmentOrThrow(organizationId, departmentId);
 
-    public DepartmentResponseDTO create(DepartmentRequestDTO request) {
-        Organization organization = organizationRepository.findById(request.getOrganizationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.getOrganizationId()));
-
-        if (!Boolean.TRUE.equals(organization.getIsActive())) {
-            throw new BusinessRuleException("Cannot add a department to an inactive organization.");
+        if (departmentRepository.existsByOrganization_IdAndNameAndIdNot(
+                organizationId,
+                request.getName(),
+                departmentId
+        )) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ya existe otro departamento con ese nombre en la organización"
+            );
         }
 
-        if (repository.existsByOrganizationIdAndName(request.getOrganizationId(), request.getName())) {
-            throw new BusinessRuleException("Department name '" + request.getName() + "' already exists in this organization.");
-        }
+        department.setName(request.getName());
+        department.setDescription(request.getDescription());
 
-        Department entity = new Department();
-        entity.setOrganization(organization);
-        entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
-        entity.setIsActive(request.isActive());
-        
-        Department saved = repository.saveAndFlush(entity);
-        DepartmentResponseDTO response = new DepartmentResponseDTO();
-        response.setId(saved.getId());
-        response.setOrganizationId(saved.getOrganization().getId());
-        response.setName(saved.getName());
-        response.setDescription(saved.getDescription());
-        response.setActive(saved.getIsActive());
-        response.setCreatedAt(saved.getCreatedAt());
-        return response;
+        Department updated = departmentRepository.save(department);
+
+        return toResponse(updated);
     }
 
-    public DepartmentResponseDTO update(UUID id, DepartmentRequestDTO request) {
-        Department entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department", id));
-        Organization organization = organizationRepository.findById(request.getOrganizationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization", request.getOrganizationId()));
+    public DepartmentResponseDTO updateStatus(
+            UUID organizationId,
+            UUID departmentId,
+            DepartmentStatusUpdateRequestDTO request
+    ) {
+        Department department = getDepartmentOrThrow(organizationId, departmentId);
 
-        boolean nameChanged = !entity.getName().equals(request.getName());
-        boolean orgChanged = !entity.getOrganization().getId().equals(request.getOrganizationId());
-        if ((nameChanged || orgChanged) && repository.existsByOrganizationIdAndName(request.getOrganizationId(), request.getName())) {
-            throw new BusinessRuleException("Department name '" + request.getName() + "' already exists in this organization.");
-        }
+        department.setIsActive(request.getIsActive());
 
-        entity.setOrganization(organization);
-        entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
-        entity.setIsActive(request.isActive());
-        
-        Department saved = repository.saveAndFlush(entity);
-        DepartmentResponseDTO response = new DepartmentResponseDTO();
-        response.setId(saved.getId());
-        response.setOrganizationId(saved.getOrganization().getId());
-        response.setName(saved.getName());
-        response.setDescription(saved.getDescription());
-        response.setActive(saved.getIsActive());
-        response.setCreatedAt(saved.getCreatedAt());
-        return response;
+        Department updated = departmentRepository.save(department);
+
+        return toResponse(updated);
     }
 
-    public void delete(UUID id) {
-        Department entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department", id));
-
-        boolean hasActivePersons = personRepository.findAllByDepartmentId(id).stream()
-                .anyMatch(p -> Boolean.TRUE.equals(p.getIsActive()));
-        if (hasActivePersons) {
-            throw new BusinessRuleException("Cannot delete a department with active persons assigned.");
-        }
-
-        repository.delete(entity);
+    private Organization getOrganizationOrThrow(UUID organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Organización no encontrada"
+                ));
     }
 
-    public DepartmentResponseDTO deactivate(UUID id) {
-        Department entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Department", id));
-        entity.setIsActive(false);
-        
-        Department saved = repository.saveAndFlush(entity);
-        DepartmentResponseDTO response = new DepartmentResponseDTO();
-        response.setId(saved.getId());
-        response.setOrganizationId(saved.getOrganization().getId());
-        response.setName(saved.getName());
-        response.setDescription(saved.getDescription());
-        response.setActive(saved.getIsActive());
-        response.setCreatedAt(saved.getCreatedAt());
-        return response;
+    private Department getDepartmentOrThrow(UUID organizationId, UUID departmentId) {
+        return departmentRepository.findByIdAndOrganization_Id(departmentId, organizationId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Departamento no encontrado"
+                ));
+    }
+
+    private DepartmentResponseDTO toResponse(Department department) {
+        return new DepartmentResponseDTO(
+                department.getId(),
+                department.getOrganization().getId(),
+                department.getName(),
+                department.getDescription(),
+                department.getIsActive(),
+                department.getCreatedAt()
+        );
     }
 }

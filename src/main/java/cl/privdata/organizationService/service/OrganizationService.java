@@ -1,15 +1,14 @@
 package cl.privdata.organizationService.service;
 
 import cl.privdata.organizationService.dto.request.OrganizationCreateRequestDTO;
-import cl.privdata.organizationService.dto.request.OrganizationRequestDTO;
+
 import cl.privdata.organizationService.dto.request.OrganizationStatusUpdateRequestDTO;
 import cl.privdata.organizationService.dto.request.OrganizationUpdateRequestDTO;
 import cl.privdata.organizationService.dto.response.OrganizationResponseDTO;
-import cl.privdata.organizationService.exception.BusinessRuleException;
-import cl.privdata.organizationService.exception.ResourceNotFoundException;
+
 import cl.privdata.organizationService.model.Organization;
 import cl.privdata.organizationService.repository.OrganizationRepository;
-import lombok.RequiredArgsConstructor;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

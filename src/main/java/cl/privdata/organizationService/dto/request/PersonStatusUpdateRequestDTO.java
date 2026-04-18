@@ -1,14 +1,13 @@
 package cl.privdata.organizationService.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-public class OrganizationStatusUpdateRequestDTO {
+public class PersonStatusUpdateRequestDTO {
 
-    @NotNull(message = "El estado isActive es obligatorio")
+    @NotNull(message = "El campo isActive es obligatorio")
     private Boolean isActive;
 
-    public OrganizationStatusUpdateRequestDTO() {
+    public PersonStatusUpdateRequestDTO() {
     }
 
     public Boolean getIsActive() {

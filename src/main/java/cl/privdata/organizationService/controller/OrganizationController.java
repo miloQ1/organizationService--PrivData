@@ -1,12 +1,13 @@
 package cl.privdata.organizationService.controller;
 
 import cl.privdata.organizationService.dto.request.OrganizationCreateRequestDTO;
-import cl.privdata.organizationService.dto.request.OrganizationRequestDTO;
+
 import cl.privdata.organizationService.dto.request.OrganizationStatusUpdateRequestDTO;
 import cl.privdata.organizationService.dto.request.OrganizationUpdateRequestDTO;
 import cl.privdata.organizationService.dto.response.ApiResponseDTO;
 import cl.privdata.organizationService.dto.response.OrganizationResponseDTO;
 import cl.privdata.organizationService.service.OrganizationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/organizations")

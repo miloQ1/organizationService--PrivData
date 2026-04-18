@@ -5,18 +5,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, UUID> {
 
-    List<Person> findAllByOrganizationId(UUID organizationId);
+    List<Person> findByOrganization_Id(UUID organizationId);
 
-    List<Person> findAllByOrganizationIdAndIsActive(UUID organizationId, Boolean isActive);
+    List<Person> findByOrganization_IdAndIsActive(UUID organizationId, Boolean isActive);
 
-    List<Person> findAllByDepartmentId(UUID departmentId);
+    List<Person> findByOrganization_IdAndDepartment_Id(UUID organizationId, UUID departmentId);
 
-    boolean existsByOrganizationIdAndRut(UUID organizationId, String rut);
+    Optional<Person> findByIdAndOrganization_Id(UUID personId, UUID organizationId);
 
-    boolean existsByOrganizationIdAndEmail(UUID organizationId, String email);
+    boolean existsByOrganization_IdAndRut(UUID organizationId, String rut);
+
+    boolean existsByOrganization_IdAndRutAndIdNot(UUID organizationId, String rut, UUID personId);
+
+    boolean existsByOrganization_IdAndEmail(UUID organizationId, String email);
+
+    boolean existsByOrganization_IdAndEmailAndIdNot(UUID organizationId, String email, UUID personId);
 }
