@@ -8,7 +8,46 @@
 
 # Documentación de la API - Organization Service
 
-Esta API RESTful permite la gestión de organizaciones, departamentos, personas y configuraciones asociadas. A continuación se describen los principales endpoints disponibles.
+
+## Descripción general
+
+**Organization Service** es una API RESTful que permite gestionar organizaciones, departamentos, personas y configuraciones asociadas. Facilita la administración de la estructura organizacional, usuarios y preferencias de privacidad/idioma de cada organización.
+
+### Funcionalidades principales
+- Crear, listar, obtener y actualizar organizaciones.
+- Gestionar departamentos dentro de cada organización.
+- Administrar personas asociadas a organizaciones y departamentos.
+- Configurar opciones de privacidad, idioma y exportación de datos para cada organización.
+
+---
+
+## Modelo de datos principal
+
+**Organization**
+- id (UUID)
+- name, legalName, rut, businessType, email, phone, address
+- isActive (boolean), timestamps
+
+**Department**
+- id (UUID)
+- organization (relación), name, description
+- isActive (boolean), createdAt
+
+**Person**
+- id (UUID)
+- organization (relación), department (opcional)
+- firstName, lastName, fullName, rut, email
+
+**OrganizationSettings**
+- id (UUID)
+- organization (relación uno a uno)
+- defaultLanguage, privacyEmail, allowDataExports, updatedAt
+
+---
+
+## Endpoints
+
+Los principales endpoints disponibles son:
 
 ---
 
